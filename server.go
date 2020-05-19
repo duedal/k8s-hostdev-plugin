@@ -123,15 +123,15 @@ func ParseDevConfig(dev string) (*DevConfig, error) {
 	devCfg.DevName = s[0]
 	devCfg.Permissions = s[1]
 
-	fileInfo, err := os.Stat(devCfg.DevName)
-  	if err != nil {
-		return nil, fmt.Errorf("ParseDevConfig failed for: %s. stat of %s failed: %v",
-			dev, devCfg.DevName, err)
-	}
-	if (fileInfo.Mode() & os.ModeDevice) == 0 {
-		return nil, fmt.Errorf("ParseDevConfig failed for: %s. %s is not a device file",
-			dev, devCfg.DevName)
-	}
+	// fileInfo, err := os.Stat(devCfg.DevName)
+  	// if err != nil {
+	// 	return nil, fmt.Errorf("ParseDevConfig failed for: %s. stat of %s failed: %v",
+	// 		dev, devCfg.DevName, err)
+	// }
+	// if (fileInfo.Mode() & os.ModeDevice) == 0 {
+	// 	return nil, fmt.Errorf("ParseDevConfig failed for: %s. %s is not a device file",
+	// 		dev, devCfg.DevName)
+	// }
 
 	if len(devCfg.Permissions) > 3 || len(devCfg.Permissions) == 0 {
 		return nil, fmt.Errorf("ParseDevConfig failed for: %s. Invalid permission string: %s. length must 1,2,3",
@@ -323,7 +323,7 @@ func (plugin *HostDevicePlugin) Allocate(ctx context.Context, r *pluginapi.Alloc
 		Permissions:   plugin.Permissions,
 	}
 
-	//log.Debugf("Request IDs: %v", r)
+	log.Debugf("Request IDs: %v", r)
 	var devicesList []*pluginapi.ContainerAllocateResponse
 
 	devicesList = append(devicesList, &pluginapi.ContainerAllocateResponse{
