@@ -1,9 +1,14 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: hostdev-device-plugin
   namespace: kube-system
+  labels:
+    name: hostdev-device-plugin-ds
 spec:
+  selector:
+    matchLabels:
+      name: hostdev-device-plugin-ds
   template:
     metadata:
       annotations:
@@ -17,7 +22,7 @@ spec:
       hostNetwork: true
       containers:
       - name: hostdev
-        image: mythay/hostdev-device-plugin-armhf
+        image: billimek/k8s-hostdev-plugin:0.1
         args: ["--devs", "/dev/mem:r"]
         securityContext:
           privileged: true
