@@ -29,23 +29,11 @@ jobs:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Build Container Image
-        if: github.ref != 'refs/heads/master'
+      - name: Build & Push Container Image
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64,linux/arm/v7 \
-            --build-arg=VERSION=${{ env.TAG }} \
-            --tag billimek/k8s-hostdev-plugin:${{ github.sha }} \
-            -f ./Dockerfile \
-            . \
-            --push
-      - name: Build Container Image
-        if: github.ref == 'refs/heads/master'
-        run: |
-          docker buildx build \
-            --platform linux/amd64,linux/arm64,linux/arm/v7 \
-            --build-arg=VERSION=${{ env.TAG }} \
-            --tag billimek/k8s-hostdev-plugin:${{ github.sha }} \
+            --tag billimek/k8s-hostdev-plugin:${{ env.TAG }} \
             -f ./Dockerfile \
             . \
             --push
