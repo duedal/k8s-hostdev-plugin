@@ -17,7 +17,7 @@ spec:
       hostNetwork: true
       containers:
       - name: hostdev
-        image: ccr.ccs.tencentyun.com/paas/hostdev:latest
+        image: mythay/hostdev-device-plugin-armhf
         args: ["--devs", "/dev/mem:r"]
         securityContext:
           privileged: true
