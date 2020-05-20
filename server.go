@@ -123,15 +123,15 @@ func ParseDevConfig(dev string) (*DevConfig, error) {
 	devCfg.DevName = s[0]
 	devCfg.Permissions = s[1]
 
-	// fileInfo, err := os.Stat(devCfg.DevName)
-  	// if err != nil {
-	// 	return nil, fmt.Errorf("ParseDevConfig failed for: %s. stat of %s failed: %v",
-	// 		dev, devCfg.DevName, err)
-	// }
-	// if (fileInfo.Mode() & os.ModeDevice) == 0 {
-	// 	return nil, fmt.Errorf("ParseDevConfig failed for: %s. %s is not a device file",
-	// 		dev, devCfg.DevName)
-	// }
+	fileInfo, err := os.Stat(devCfg.DevName)
+  	if err != nil {
+		return nil, fmt.Errorf("ParseDevConfig failed for: %s. stat of %s failed: %v",
+			dev, devCfg.DevName, err)
+	}
+	if (fileInfo.Mode() & os.ModeDevice) == 0 {
+		return nil, fmt.Errorf("ParseDevConfig failed for: %s. %s is not a device file",
+			dev, devCfg.DevName)
+	}
 
 	if len(devCfg.Permissions) > 3 || len(devCfg.Permissions) == 0 {
 		return nil, fmt.Errorf("ParseDevConfig failed for: %s. Invalid permission string: %s. length must 1,2,3",
@@ -160,21 +160,27 @@ func LoadConfigImpl(arguments []string) (*HostDevicePluginConfig, error) {
 	// Parse command-line arguments
 	//flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
-	flag.CommandLine.Parse(arguments)
+	ticker := time.NewTicker(5 * time.Second)
+	for {
+		<-ticker.C
+		flag.CommandLine.Parse(arguments)
 
-	cfg := HostDevicePluginConfig{
-		DevList: make([]*DevConfig, 0, 2),
-	}
-	devs := strings.Split(*flagDevList, ",")
-	for _, dev := range devs {
-		devCfg, err := ParseDevConfig(dev)
-		if err != nil {
-			return nil, err
+		cfg := HostDevicePluginConfig{
+			DevList: make([]*DevConfig, 0, 2),
 		}
-		cfg.DevList = append(cfg.DevList, devCfg)
+		devs := strings.Split(*flagDevList, ",")
+		for _, dev := range devs {
+			devCfg, err := ParseDevConfig(dev)
+			if err != nil {
+				// return nil, err
+				continue
+			} else {
+				cfg.DevList = append(cfg.DevList, devCfg)
+				return &cfg, nil
+				// break
+			}				
+		}
 	}
-
-	return &cfg, nil
 }
 
 func loadConfig() (*HostDevicePluginConfig, error) {
