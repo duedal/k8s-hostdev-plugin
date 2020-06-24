@@ -1,5 +1,10 @@
-FROM scratch
+FROM golang:buster AS builder
 
-COPY k8s-hostdev-plugin /
+WORKDIR /build
+COPY . .
+RUN go build ./...
 
-ENTRYPOINT ["/k8s-hostdev-plugin"]
+
+FROM debian:buster-slim AS runner
+COPY --from=builder /build/k8s-hostdev-plugin /usr/local/bin/
+ENTRYPOINT ["k8s-hostdev-plugin"]
