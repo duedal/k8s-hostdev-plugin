@@ -5,10 +5,12 @@ metadata:
     k8s-app: hostdev-device-plugin
   name: hostdev-device-plugin
   namespace: kube-system
+  labels:
+    name: hostdev-device-plugin-ds
 spec:
   selector:
     matchLabels:
-      k8s-app: hostdev-device-plugin
+      name: hostdev-device-plugin-ds
   template:
     metadata:
       annotations:
@@ -24,9 +26,8 @@ spec:
       hostNetwork: true
       containers:
       - name: hostdev
-        image: mythay/k8s-hostdev-plugin:v0.1
-        imagePullPolicy: IfNotPresent
-        args: ["--devs", "/dev/ttyACM0:rwm"]
+        image: billimek/k8s-hostdev-plugin:0.1
+        args: ["--devs", "/dev/mem:r"]
         securityContext:
           privileged: true
         volumeMounts:
